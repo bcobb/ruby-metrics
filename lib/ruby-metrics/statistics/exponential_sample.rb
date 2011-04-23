@@ -37,12 +37,12 @@ module Metrics
         if (newcount <= @size)
           @values[priority] = value
         else
-          firstkey = @values.keys[0]
+          firstkey = @values.keys.first
           if (firstkey < priority)
             @values[priority] = value
             
-            while(@values.delete(firstkey) == nil)
-              firstkey = @values.keys[0]
+            while(@values.delete(firstkey).nil?)
+              firstkey = @values.keys.first
             end
           end
         end

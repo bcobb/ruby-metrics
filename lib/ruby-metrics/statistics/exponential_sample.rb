@@ -79,13 +79,11 @@ module Metrics
       
       def values
         # read-lock?
-        result = Array.new
+
         keys = @values.keys.sort
-        keys.each do |key|
+        keys.reduce([]) do |result, key|
           result << @values[key]
         end
-        
-        return result
       end
     end
   end

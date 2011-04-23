@@ -82,13 +82,9 @@ module Metrics
       end
 
       def values
-        result = []
-
-        @histogram.values.each do |value|
+        @histogram.values.reduce([]) do |result, value|
           result << (scale_duration_to_ns value, @duration_unit)
         end
-        
-        result
       end
       
       def update_timer(duration)

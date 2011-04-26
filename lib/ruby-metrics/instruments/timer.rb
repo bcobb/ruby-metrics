@@ -85,8 +85,8 @@ module Metrics
       end
 
       def values
-        @histogram.values.inject([]) do |values, value|
-          values << (scale_duration_to_ns value)
+        @histogram.values.reduce([]) do |result, value|
+          result << (scale_duration_to_ns value, @duration_unit)
         end
       end
       

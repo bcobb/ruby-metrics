@@ -67,13 +67,13 @@ module Metrics
       end
       
       def update_min(value)
-        if (@min == nil || value < @min)
+        if (@min.nil? || value < @min)
           @min = value 
         end
       end
       
       def update_max(value)
-        if (@max == nil || value > @max)
+        if (@max.nil? || value > @max)
           @max = value 
         end        
       end

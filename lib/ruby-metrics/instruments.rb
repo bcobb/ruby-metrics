@@ -10,12 +10,14 @@ require File.join(File.dirname(__FILE__), 'instruments', 'meter')
 require File.join(File.dirname(__FILE__), 'instruments', 'gauge')
 require File.join(File.dirname(__FILE__), 'instruments', 'histogram')
 require File.join(File.dirname(__FILE__), 'instruments', 'timer')
+require File.join(File.dirname(__FILE__), 'instruments', 'calibration')
 
 
 require 'json'
 
 module Metrics
   module Instruments
+
     @instruments = {}
     
     @types = {
@@ -26,10 +28,6 @@ module Metrics
       :uniform_histogram      => UniformHistogram,
       :timer                  => Timer
     }
-    
-    def self.register_with_options(type, name, options = {})
-      @instruments[name] = @types[type].new(options)
-    end
     
     def self.register(type, name, &block)
       @instruments[name] = @types[type].new(&block)
@@ -42,47 +40,28 @@ module Metrics
     def self.registered
       @instruments
     end
-    
-    def self.to_json
-      @instruments.to_json 
+
+    def self.types
+      @types
     end
     
-    module TypeMethods
-      
-      def register(type, name, &block)
-        Metrics::Instruments.register(type, name, &block)
-      end
-      
-      def register_with_options(type, name, options)
-        Metrics::Instruments.register_with_options(type, name, options)
-      end
-      
-      def counter(name)
-        register(:counter, name)
-      end
-      
-      def meter(name)
-        register(:meter, name)
-      end
-      
-      def gauge(name, &block)
-        register(:gauge, name, &block)
-      end
-      
-      def timer(name, options = {})
-        register_with_options(:timer, name, options)
-      end      
+    def self.to_json
+      registered.to_json 
+    end
 
-      def uniform_histogram(name)
-        register(:uniform_histogram, name)
+    module Instrumentation
+
+      Metrics::Instruments.types.each do |instrument, klass|
+
+        define_method(instrument) do |name, &block|
+          Metrics::Instruments.register(instrument, name, &block)
+        end
+
       end
-      
+
       # For backwards compatibility
       alias_method :histogram, :uniform_histogram
-      
-      def exponential_histogram(name)
-        register(:exponential_histogram, name)
-      end
+    
     end
     
   end
